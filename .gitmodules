@@ -1,0 +1,6 @@
+[submodule "prompts"]
+	path = prompts
+	url = https://github.com/q56983207-ai/awesome-ai-prompts.git
+[submodule "agent-rules"]
+	path = agent-rules
+	url = https://github.com/q56983207-ai/awesome-agent-rules.git

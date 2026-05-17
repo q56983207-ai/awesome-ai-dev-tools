@@ -1,0 +1,310 @@
+# Project Rules for Cursor
+
+> These rules configure Cursor AI assistant to follow project-specific conventions.
+
+---
+
+## Project Structure
+
+```
+/
+├── src/
+│   ├── components/     # Reusable UI components
+│   │   ├── ui/        # Base UI (Button, Input, etc.)
+│   │   └── feature/   # Feature-specific components
+│   ├── hooks/         # Custom React hooks
+│   ├── services/     # API clients, business logic
+│   ├── utils/         # Pure utility functions
+│   ├── types/         # TypeScript definitions
+│   └── stores/        # State management (Zustand/Redux)
+├── tests/
+│   ├── unit/          # Unit tests
+│   ├── integration/   # Integration tests
+│   └── e2e/           # E2E tests
+├── docs/              # Documentation
+├── scripts/           # Build scripts
+└── .cursor/rules/     # This directory
+```
+
+---
+
+## Code Style
+
+### TypeScript Conventions
+
+```typescript
+// Use explicit types, avoid any
+const fetchData = async <T>(url: string): Promise<T> => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+};
+
+// Prefer const, use readonly for immutable data
+const config: Readonly<Config> = {
+  apiUrl: process.env.API_URL,
+  timeout: 5000,
+};
+```
+
+### Component Structure
+
+```tsx
+// 1. Imports (external, then internal)
+import React, { useState, useCallback } from 'react';
+import { cn } from '@/lib/utils';
+import { Button } from '../ui/Button';
+
+// 2. Type definitions
+interface UserCardProps {
+  userId: string;
+  className?: string;
+}
+
+// 3. Component definition
+export function UserCard({ userId, className }: UserCardProps) {
+  // Hooks first
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Callbacks
+  const handleClick = useCallback(() => {
+    setIsLoading(true);
+    // ...
+  }, []);
+
+  // Early returns
+  if (!userId) return null;
+
+  // Render
+  return (
+    <div className={cn('user-card', className)}>
+      <Button onClick={handleClick} disabled={isLoading}>
+        {isLoading ? 'Loading...' : 'Click me'}
+      </Button>
+    </div>
+  );
+}
+```
+
+### File Naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Components | PascalCase.tsx | `UserCard.tsx` |
+| Hooks | use{camelCase}.ts | `useAuth.ts` |
+| Utils | camelCase.ts | `formatDate.ts` |
+| Services | camelCase.ts | `apiClient.ts` |
+| Types | camelCase.ts | `userTypes.ts` |
+| Tests | Same as source + .test | `UserCard.test.tsx` |
+
+---
+
+## Prohibited
+
+### Code
+
+- ❌ `any` type — Use `unknown` or specific types
+- ❌ `console.log` — Use the `logger` utility
+- ❌ Inline styles — Use Tailwind classes
+- ❌ Magic numbers — Define constants
+- ❌ Non-null assertions (`!`) — Handle null explicitly
+- ❌ String interpolation in SQL — Use parameterized queries
+- ❌ Default exports — Use named exports
+
+### Git
+
+- ❌ Secrets in code — Use environment variables
+- ❌ Force pushes — Use PRs
+- ❌ Commit directly to main — Code review required
+- ❌ Large files in git — Use Git LFS > 5MB
+
+### Dependencies
+
+- ❌ Unaudited packages — Run `npm audit` first
+- ❌ Outdated major versions — Keep current
+- ❌ Unused imports — Remove immediately
+
+---
+
+## Testing Requirements
+
+### Coverage Targets
+
+```
+Line coverage:   >= 80%
+Branch coverage: >= 75%
+Function coverage: >= 90%
+```
+
+### Test File Location
+
+- Unit tests: Next to source file `*.test.ts(x)`
+- Integration tests: `tests/integration/`
+- E2E tests: `tests/e2e/`
+
+### Test Conventions
+
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { UserCard } from './UserCard';
+
+describe('UserCard', () => {
+  describe('rendering', () => {
+    it('should display user name', () => {
+      render(<UserCard userId="123" userName="Alice" />);
+      expect(screen.getByText('Alice')).toBeInTheDocument();
+    });
+
+    it('should show loading state on click', async () => {
+      render(<UserCard userId="123" />);
+      fireEvent.click(screen.getByRole('button'));
+      expect(screen.getByText('Loading...')).toBeInTheDocument();
+    });
+  });
+});
+```
+
+### Required Test Types
+
+1. **Component tests** — Render and interaction
+2. **Hook tests** — State changes and side effects
+3. **API tests** — Request/response handling
+4. **E2E tests** — Critical user flows
+
+---
+
+## Commit Conventions
+
+### Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+| Type | Description |
+|------|-------------|
+| feat | New feature |
+| fix | Bug fix |
+| docs | Documentation |
+| style | Formatting (no logic) |
+| refactor | Code restructure |
+| test | Tests |
+| chore | Tooling, dependencies |
+
+### Examples
+
+```
+feat(auth): implement OAuth2 flow
+
+- Add Google provider
+- Handle token refresh
+- Store tokens in HttpOnly cookies
+
+Closes #123
+```
+
+```
+fix(dashboard): correct chart rendering on resize
+
+Charts weren't updating when container size changed.
+Added ResizeObserver to trigger re-render.
+
+Fixes #456
+```
+
+---
+
+## Security
+
+### Input Validation
+
+```typescript
+import { z } from 'zod';
+
+const UserInput = z.object({
+  email: z.string().email(),
+  age: z.number().int().min(0).max(150),
+  name: z.string().min(1).max(100).trim(),
+});
+
+type UserInput = z.infer<typeof UserInput>;
+```
+
+### Environment Variables
+
+```typescript
+// Always use process.env
+const API_KEY = process.env.API_KEY;
+const DB_URL = process.env.DATABASE_URL;
+
+// Never hardcode
+// const API_KEY = 'sk-live-abc123'; ❌
+```
+
+### Dependencies
+
+```bash
+# Audit before each deploy
+npm audit
+
+# Update immediately for security patches
+npm audit fix
+
+# Check for outdated packages
+npm outdated
+```
+
+---
+
+## Commands
+
+```bash
+# Development
+npm run dev     # Start dev server
+npm run build   # Production build
+
+# Quality
+npm run lint    # ESLint
+npm run format  # Prettier
+npm run typecheck # TypeScript
+
+# Testing
+npm test        # Run tests
+npm run test:watch  # Watch mode
+npm run test:coverage # Coverage
+```
+
+---
+
+## Additional Guidelines
+
+### CSS/Tailwind
+
+- Use Tailwind utility classes
+- Custom styles in `src/styles/` or CSS modules
+- Follow design system tokens
+- No inline styles
+
+### API Design
+
+- RESTful endpoints
+- JSON request/response
+- Proper HTTP status codes
+- Consistent error format
+
+### Error Handling
+
+- Use custom Error classes
+- Log errors with context
+- Never expose internal details
+- Graceful degradation
+
+---
+
+**These rules apply to all AI-generated code. Follow strictly.**

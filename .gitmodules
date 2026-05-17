@@ -4,9 +4,9 @@
 [submodule "agent-rules"]
 	path = agent-rules
 	url = https://github.com/q56983207-ai/awesome-agent-rules.git
-[submodule "projects/ai-readme-generator"]
-	path = projects/ai-readme-generator
+[submodule "ai-readme-generator"]
+	path = ai-readme-generator
 	url = https://github.com/q56983207-ai/ai-readme-generator.git
-[submodule "projects/commit-message-generator"]
-	path = projects/commit-message-generator
+[submodule "commit-message-generator"]
+	path = commit-message-generator
 	url = https://github.com/q56983207-ai/commit-message-generator.git

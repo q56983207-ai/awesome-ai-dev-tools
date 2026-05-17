@@ -10,3 +10,6 @@
 [submodule "commit-message-generator"]
 	path = commit-message-generator
 	url = https://github.com/q56983207-ai/commit-message-generator.git
+[submodule "dev-toolbox"]
+	path = dev-toolbox
+	url = https://github.com/q56983207-ai/dev-toolbox.git

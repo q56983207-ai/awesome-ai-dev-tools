@@ -16,3 +16,6 @@
 [submodule "copy-clean-url"]
 	path = copy-clean-url
 	url = https://github.com/q56983207-ai/copy-clean-url.git
+[submodule "ai-api-cost-calculator"]
+	path = ai-api-cost-calculator
+	url = https://github.com/q56983207-ai/ai-api-cost-calculator.git
